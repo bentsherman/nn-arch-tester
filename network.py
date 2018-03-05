@@ -36,8 +36,11 @@ class Network(object):
 			a = sigmoid(z)
 			A.append(a)
 
+		# accumulate cost
+		self._cost += self.cost(A[-1], y)
+
 		# backward pass
-		delta = (A[-1] - y)
+		delta = self.cost_deriv(A[-1], y)
 
 		delta_W[-1] = np.dot(delta, A[-2].T)
 		delta_b[-1] = delta
@@ -49,10 +52,22 @@ class Network(object):
 
 		return (delta_W, delta_b)
 
+	def cost(self, a, y):
+		return np.sum(np.nan_to_num(-y * np.log(a) - (1-y) * np.log(1-a)))
+
+	def cost_deriv(self, a, y):
+		return a - y;
+
 	def train(self, X_train, y_train, num_iter, batch_size, lr, monitor=-1):
 		n = X_train.shape[0]
 
+		if monitor != -1:
+			print "%-12s  %-12s  %-12s" % ("iteration", "cost", "val_accuracy")
+
 		for t in xrange(num_iter):
+			# initialize cost
+			self._cost = 0
+
 			# sample mini-batch from training set
 			indices = random.sample(xrange(n), batch_size)
 			x_batch = X_train[indices]
@@ -73,7 +88,7 @@ class Network(object):
 			self.biases = [b - lr / batch_size * db for b, db in zip(self.biases, delta_b)]
 
 			if monitor != -1 and (t % monitor == 0):
-				print "iteration %d: %g" % (t, self.evaluate(x_batch, y_batch))
+				print "%12d  %12.3f  %12.3f" % (t, self._cost, self.evaluate(x_batch, y_batch))
 
 	def evaluate(self, X_test, y_test):
 		y = [self.feedforward(x) for x in X_test]

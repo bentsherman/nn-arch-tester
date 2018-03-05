@@ -12,7 +12,7 @@ def to_categorical(y):
 
 def evaluate(X_train, y_train, X_test, y_test, sizes, num_iter=1000, batch_size=100, lr=0.5):
 	net = network.Network(sizes)
-	net.train(X_train, y_train, num_iter, batch_size, lr)
+	net.train(X_train, y_train, num_iter, batch_size, lr, monitor=100)
 
 	return net.evaluate(X_test, y_test)
 
