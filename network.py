@@ -46,7 +46,7 @@ class Network(object):
 		delta_b[-1] = delta
 
 		for l in xrange(2, self.num_layers):
-			delta = np.dot(self.weights[-l+1].T, delta) * sigmoid_deriv(Z[-1])
+			delta = np.dot(self.weights[-l+1].T, delta) * sigmoid_deriv(Z[-l])
 			delta_W[-l] = np.dot(delta, A[-l-1].T)
 			delta_b[-l] = delta
 
@@ -99,4 +99,4 @@ def sigmoid(x):
 	return 1/(1 + np.exp(-x))
 
 def sigmoid_deriv(x):
-	return x * (1 - x)
+	return sigmoid(x) * (1 - sigmoid(x))
